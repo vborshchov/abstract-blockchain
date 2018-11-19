@@ -6,10 +6,16 @@
 </template>
 
 <script>
+import Chain from './models/Chain';
 import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
+  data() {
+    return {
+      chain: new Chain()
+    }
+  },
   components: {
     HelloWorld
   }
