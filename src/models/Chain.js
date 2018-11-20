@@ -49,4 +49,17 @@ export default class Chain {
         }
         return true;
     }
+
+    getAddressBalance(address) {
+        let balance = 0
+        for (const block of this.blocks) {
+            for (const transaction of block.transactions) {
+                if (transaction.from === address)
+                    balance -= transaction.amount;
+                if (transaction.to === address)
+                    balance += transaction.amount;
+            }
+        }
+        return balance;
+    }
 }
