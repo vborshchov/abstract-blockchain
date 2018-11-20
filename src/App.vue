@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+      <p>difficulty: {{chain.difficulty}}</p>
     <el-form
         label-position="right"
         :rules="rules"
@@ -43,10 +44,12 @@
             label="From">
             <template slot-scope="scope">
                 <el-popover trigger="click" placement="top">
-                <p>Transactions: {{ scope.row.transactions }}</p>
-                <div slot="reference" class="name-wrapper">
-                    {{ scope.row.transactions ? scope.row.transactions[0].from : '---' }}
-                </div>
+                    <p>Transactions: {{ scope.row.transactions }}</p>
+                    <p>Previous hash: {{scope.row.previousHash}}</p>
+                    <p>Hash: {{scope.row.hash}}</p>
+                    <div slot="reference" class="name-wrapper">
+                        {{ scope.row.transactions ? scope.row.transactions[0].from : '---' }}
+                    </div>
                 </el-popover>
             </template>
         </el-table-column>
@@ -54,10 +57,12 @@
             label="To">
             <template slot-scope="scope">
                 <el-popover trigger="click" placement="top">
-                <p>Transactions: {{ scope.row.transactions }}</p>
-                <div slot="reference" class="name-wrapper">
-                    {{ scope.row.transactions ? scope.row.transactions[0].to : '---' }}
-                </div>
+                    <p>Transactions: {{ scope.row.transactions }}</p>
+                    <p>Previous hash: {{scope.row.previousHash}}</p>
+                    <p>Hash: {{scope.row.hash}}</p>
+                    <div slot="reference" class="name-wrapper">
+                        {{ scope.row.transactions ? scope.row.transactions[0].to : '---' }}
+                    </div>
                 </el-popover>
             </template>
         </el-table-column>
@@ -103,7 +108,7 @@ export default {
         submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.chain.mineAndAddBlock([JSON.parse(JSON.stringify(this.transactionForm))])
           } else {
             console.log('error submit!!');
             return false;
