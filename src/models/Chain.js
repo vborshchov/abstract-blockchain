@@ -6,6 +6,6 @@ export default class Chain {
     }
 
     createGenesisBlock() {
-        return new Block([], null, Date.now())
+        return new Block(null, null, Date.now())
     }
 }
