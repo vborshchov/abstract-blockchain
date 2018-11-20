@@ -1,14 +1,13 @@
 <template>
   <div id="app">
-      <p>difficulty: {{chain.difficulty}}</p>
+    <p class="difficulty">Difficulty: {{chain.difficulty}}</p>
     <el-form
-        label-position="right"
-        :rules="rules"
-        ref="transactionForm"
-        label-width="200px"
-        :model="transactionForm"
-        class="form-inline"
-    >
+            label-position="right"
+            :rules="rules"
+            ref="transactionForm"
+            label-width="200px"
+            :model="transactionForm"
+            class="form-inline">
         <el-form-item label="From address" prop="from">
             <el-input v-model="transactionForm.from" placeholder="from walet address"></el-input>
         </el-form-item>
@@ -19,8 +18,8 @@
             <el-input-number
                 v-model="transactionForm.amount"
                 :min="0"
-                :step="0.1"
-            ></el-input-number>
+                :step="0.1">
+            </el-input-number>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="submitForm('transactionForm')">Send</el-button>
@@ -123,12 +122,15 @@ export default {
 </script>
 
 <style>
-#app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-}
+    #app {
+        font-family: "Avenir", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: #2c3e50;
+        margin-top: 60px;
+    }
+
+    .difficulty {
+        text-align: right;
+    }
 </style>
