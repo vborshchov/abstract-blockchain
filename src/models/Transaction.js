@@ -9,16 +9,20 @@ export default class Transaction {
     }
 
     calculateHash() {
-        return crypto.SHA3(this.from + this.to + this.amount)
+        return crypto.SHA3(this.from + this.to + this.amount).toString()
     }
 
-    sign(signKeyPair) {
-        if (signKeyPair.getPublic('hex') !== this.from) {
-            return; 
-        }
-        let hashTransaction = this.calculateHash()
-        let sig = signKeyPair.sign(hashTransaction, 'hex')
-        this.signature = sig.toDER('hex')
+    async sign(signKeyPair) {
+        return new Promise((resolve, reject) => {
+            if (signKeyPair.getPublic('hex') !== this.from) {
+                reject('You can not sign transaction from another wallet');
+            }
+            let hashTransaction = this.calculateHash()
+            let sig = signKeyPair.sign(hashTransaction, 'hex')
+            this.signature = sig.toDER('hex')
+            return resolve(true);
+        })
+
     }
 
     isValid() {

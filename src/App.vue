@@ -1,7 +1,14 @@
 <template>
   <div id="app">
-      <p>Public key 1: {{keyPair1.getPublic('hex')}}</p>
-      <p>Public key 2: {{keyPair2.getPublic('hex')}}</p>
+        <h2>Your Wallet:</h2>
+        <el-input
+            :value="myWalletPublicKey"
+            ref="myWallet"
+            @focus="selectText">
+        </el-input>
+        <p v-for="(wallet, index) in wallets" :key="index">
+            Wallet : {{wallet.getPublic('hex')}}
+        </p>
     <p class="difficulty">Difficulty: {{chain.difficulty}}</p>
     <el-form
             label-position="right"
@@ -82,49 +89,73 @@
 <script>
 import Chain from "./models/Chain";
 import Transaction from "./models/Transaction";
-import EC from 'elliptic/lib/elliptic/ec';
+import EC from "elliptic/lib/elliptic/ec";
+
+const ec = new EC("secp256k1");
 
 export default {
     name: "app",
     data() {
         return {
             transactionForm: {
-                from: '',
-                to: '',
-                amount: 0,
+                from: "",
+                to: "",
+                amount: 0
             },
-            keyPair1: new EC('secp256k1').genKeyPair(),
-            keyPair2: new EC('secp256k1').genKeyPair(),
+            myWallet: {},
+            wallets: [],
             chain: new Chain(),
             rules: {
                 from: [
-                    { required: true, message: 'Please input From address', trigger: 'blur' },
+                    { required: true, message: "Please input From address", trigger: "blur" }
                 ],
                 to: [
-                    { required: true, message: 'Please input To address', trigger: 'blur' },
+                    { required: true, message: "Please input To address", trigger: "blur" }
                 ],
                 amount: [
-                    { required: true, message: 'Please input Amount', trigger: 'change'}
+                    { required: true, message: "Please input Amount", trigger: "change" }
                 ]
-            },
+            }
+        };
+    },
+    computed: {
+        myWalletPublicKey() {
+            return this.myWallet.getPublic('hex')
         }
     },
+    created() {
+        this.myWallet = ec.genKeyPair()
+        this.generateWallet();
+        this.generateWallet();
+    },
     methods: {
+        generateWallet() {
+            const keyPair = ec.genKeyPair()
+            this.wallets.push(keyPair);
+        },
         submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let transaction = new Transaction(JSON.parse(JSON.stringify(this.transactionForm)))
-            transaction.sign(this.keyPair1)
-            this.chain.mineAndAddBlock([transaction])
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      }
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    let transaction = new Transaction(
+                        JSON.parse(JSON.stringify(this.transactionForm))
+                    );
+                    transaction.sign(this.myWallet).then(() => {
+                        this.chain.mineAndAddBlock([transaction]);
+                    }).catch (error => {
+                        this.$message.error(error)
+                    });
+                } else {
+                    console.log("error submit!!"); // eslint-disable-line no-console
+                    return false;
+                }
+            })
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
+        selectText() {
+            this.$refs.myWallet.select();
+        }
     }
 };
 </script>

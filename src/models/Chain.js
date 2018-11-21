@@ -29,7 +29,7 @@ export default class Chain {
         const end = performance.now();
         const diff = end - begin;
 
-        console.log({ time: diff, difficulty: this.difficulty });
+        console.log({ time: diff, difficulty: this.difficulty }); // eslint-disable-line no-console
         if (diff < MINE_TIME_PERIOD) {
             this.difficulty += 1;
         } else {
