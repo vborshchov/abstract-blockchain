@@ -15,6 +15,9 @@ export default class Block {
     }
 
     addTransaction(transaction) {
+        if (!transaction.isValid) {
+            throw new Error('Invalid transaction')
+        }
         this.transactions.push(transaction)
     }
 
@@ -26,5 +29,14 @@ export default class Block {
             }
             this.hash = this.calculateHash();
         }
+    }
+
+    hasValidTransactions(){
+        for( let transaction of this.transactions ){
+            if(!transaction.isValid()){
+                return false
+            }
+        }
+        return false
     }
 }

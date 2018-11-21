@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+      <p>Public key 1: {{keyPair1.getPublic('hex')}}</p>
+      <p>Public key 2: {{keyPair2.getPublic('hex')}}</p>
     <p class="difficulty">Difficulty: {{chain.difficulty}}</p>
     <el-form
             label-position="right"
@@ -79,6 +81,8 @@
 
 <script>
 import Chain from "./models/Chain";
+import Transaction from "./models/Transaction";
+import EC from 'elliptic/lib/elliptic/ec';
 
 export default {
     name: "app",
@@ -89,6 +93,8 @@ export default {
                 to: '',
                 amount: 0,
             },
+            keyPair1: new EC('secp256k1').genKeyPair(),
+            keyPair2: new EC('secp256k1').genKeyPair(),
             chain: new Chain(),
             rules: {
                 from: [
@@ -107,7 +113,9 @@ export default {
         submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.chain.mineAndAddBlock([JSON.parse(JSON.stringify(this.transactionForm))])
+            let transaction = new Transaction(JSON.parse(JSON.stringify(this.transactionForm)))
+            transaction.sign(this.keyPair1)
+            this.chain.mineAndAddBlock([transaction])
           } else {
             console.log('error submit!!');
             return false;
