@@ -20,7 +20,7 @@ export default class Transaction {
             let hashTransaction = this.calculateHash()
             let sig = signKeyPair.sign(hashTransaction, 'hex')
             this.signature = sig.toDER('hex')
-            return resolve(true);
+            return resolve(this.signature);
         })
 
     }

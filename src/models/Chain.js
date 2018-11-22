@@ -17,7 +17,7 @@ export default class Chain {
         return this.blocks[this.blocks.length - 1];
     }
 
-    mineAndAddBlock(transactions) {
+    async mineAndAddBlock(transactions) {
         const begin = performance.now();
         let block = new Block();
         transactions.forEach(function(transaction) {
@@ -25,17 +25,19 @@ export default class Chain {
         });
         let previousBlock = this.getPreviousBlock();
         block.previousHash = previousBlock.hash;
-        block.mineBlock(this.difficulty);
-        const end = performance.now();
-        const diff = end - begin;
+        return block.mineBlock(this.difficulty).then(() => {
+            const end = performance.now();
+            const diff = end - begin;
 
-        console.log({ time: diff, difficulty: this.difficulty }); // eslint-disable-line no-console
-        if (diff < MINE_TIME_PERIOD) {
-            this.difficulty += 1;
-        } else {
-            this.difficulty -= 1;
-        }
-        this.blocks.push(block)
+            console.log({ time: diff, difficulty: this.difficulty }); // eslint-disable-line no-console
+            if (diff < MINE_TIME_PERIOD) {
+                this.difficulty += 1;
+            } else {
+                this.difficulty -= 1;
+            }
+            this.blocks.push(block)
+            return this.blocks;
+        })
     }
 
     isValid() {
@@ -50,10 +52,10 @@ export default class Chain {
         return true;
     }
 
-    getAddressBalance(address) {
+    getAddressBalance(address, blocksNumber = this.blocks.length) {
         let balance = 0
-        for (const block of this.blocks) {
-            for (const transaction of block.transactions) {
+        for (let i = 1; i <= blocksNumber; i++) { //skip genesis block
+            for (const transaction of this.blocks[i].transactions) {
                 if (transaction.from === address)
                     balance -= transaction.amount;
                 if (transaction.to === address)
