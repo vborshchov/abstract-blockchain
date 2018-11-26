@@ -61,6 +61,7 @@
         },
         data() {
             return {
+                worldState: {},
                 peer: {},
                 node: {},
                 isMining: false,
@@ -118,7 +119,27 @@
                 this.node.chain.mineAndAddBlock([transaction]).then(blocks => {
                     console.log('blocks', blocks) // eslint-disable-line no-console
                     this.isMining = false
+                    this.updateWorldState(blocks[blocks.length-1])
                 })
+            },
+            updateWorldState(block) {
+                console.log(block) // eslint-disable-line no-console
+                let transactions = block.transactions
+                console.log(block.transactions) // eslint-disable-line no-console
+                for (let i = 0; i < transactions.length; i++) {
+                    console.log(transactions[i]) // eslint-disable-line no-console
+                    let {from, to, amount} = transactions[i]
+                    if (this.worldState[from]) {
+                        this.worldState[from] -= amount   
+                    } else {
+                        this.worldState[from] = -amount   
+                    }
+                    if (this.worldState[to]) {
+                        this.worldState[to] += amount   
+                    } else {
+                        this.worldState[to] = +amount   
+                    }
+                }
             },
             submitForm(formName) {
                 this.isMining = true
@@ -132,6 +153,7 @@
                             this.node.chain.mineAndAddBlock([transaction]).then(blocks => {
                                 console.log('blocks', blocks) // eslint-disable-line no-console
                                 this.isMining = false
+                                this.updateWorldState(blocks[blocks.length-1])
                             })
                         }).catch (error => {
                             console.log('submit', error) // eslint-disable-line no-console
