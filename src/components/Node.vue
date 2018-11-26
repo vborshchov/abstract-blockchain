@@ -112,8 +112,8 @@
             onPeerData(data) {
                 console.log('data: ' + data)  // eslint-disable-line no-console
                 let transaction = new Transaction(
-                            JSON.parse(JSON.stringify(data))
-                        );
+                    JSON.parse(data)
+                );
                 this.isMining = true
                 this.node.chain.mineAndAddBlock([transaction]).then(blocks => {
                     console.log('blocks', blocks) // eslint-disable-line no-console
