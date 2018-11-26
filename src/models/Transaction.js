@@ -2,10 +2,11 @@ import crypto from 'crypto-js'
 import EC from 'elliptic/lib/elliptic/ec';
 
 export default class Transaction {
-    constructor({from, to, amount}) {
+    constructor({from, to, amount, signature}) {
         this.from = from
         this.to = to
         this.amount = amount
+        this.signature = signature
     }
 
     calculateHash() {
